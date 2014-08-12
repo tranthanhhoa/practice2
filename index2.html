@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>:: Index 2 ::</title>
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <!--<link rel="stylesheet" href="css/style.css"/>-->
+    <style>
+        body {
+            margin: 0;
+            font-family: arial;
+        }
+        svg{
+            margin: 0;
+            padding: 0;
+        }
+        g{
+            margin: 0;
+        }
+        h1 {
+            padding: 57px 20px;
+            margin: 0;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            color: #008AF7;
+            text-transform: uppercase;
+            font-size: 50px;
+            font-weight: normal;
+        }
+
+        .text {
+            font-size: 45px;
+            opacity: 0;
+        }
+
+        .number {
+            font-size: 140px;
+            opacity: 0;
+        }
+        #settings{
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+    </style>
+    <script src="lib/d3/d3.min.js"></script>
+</head>
+<body>
+<h1 id="heading">Heading slide</h1>
+<div id="settings">
+
+    <nav class="st-menu st-effect-1" id="menu-1">
+        <h2 class="icon icon-lab"><span class="glyphicon glyphicon-cog"></span> Settings</h2>
+        <ul>
+            <li><a class="icon icon-data" href="#">Change background</a></li>
+            <li><a class="icon icon-location" href="#">Change animation</a></li>
+        </ul>
+    </nav>
+</div>
+
+<script>
+    document.getElementById('heading').style.height = window.innerHeight * 0.25 + 'px';
+    console.log(window.innerHeight);
+    console.log(window.innerHeight * 0.25);
+    console.log(window.innerHeight * 0.75);
+
+    function render(data){
+        var height = window.innerHeight * 0.75;
+        var xTextPos = window.innerWidth * 0.3, yTextPos = window.innerHeight * 0.3;
+        var xNumPos = window.innerWidth * 0.05, yNumPos = window.innerHeight * 0.3;
+        var LABEL_LIMIT = 40;
+        var isLabelTooLong = function (str) {
+                    return String(str).length > LABEL_LIMIT;
+                },
+                truncateLabel = function (str) {
+                    return String(str).substr(0, LABEL_LIMIT) + '...';
+                };
+
+        var svg = d3.select("body").append('svg').attr('class','slideshow')
+                .attr("width", '100%')
+                .attr('height', height)
+                .attr('fill', '#008AF7');
+        var rect = svg.selectAll("g.slide").data(data);
+        rect.enter()
+                .append('g').attr('class','slide');
+        rect.append('rect')
+                .attr('width', '100%')
+                .attr('height', height);
+        rect.append('text')
+                .attr('class', 'number')
+                .attr('transform', "translate(" + xNumPos + "," + yNumPos + ")")
+                .style('fill', 'white')
+                .transition()
+                .duration(2000)
+                .style('opacity',1)
+                .text(function (d) {
+                    return parseInt(d.age) + '%';
+                });
+        rect.append('text')
+                .attr('class', 'text')
+                .attr('transform', "translate(" + xTextPos + "," + yTextPos + ")")
+                .style('fill', 'white')
+                .transition()
+                .duration(2000)
+                .style('opacity',1)
+                .text(function (d) {
+                    return isLabelTooLong(d.name) ? truncateLabel(d.name) : d.name;
+                });
+        rect.exit().remove();
+    }
+    d3.json("app/data/data.json",render);
+</script>
+<!--<script src="app/slide.js"></script>-->
+</body>
+</html>
